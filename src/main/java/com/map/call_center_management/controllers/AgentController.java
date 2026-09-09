@@ -4,6 +4,7 @@ import static com.map.call_center_management.data.enums.AgentAvailability.OFFLIN
 import static java.lang.Boolean.FALSE;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +23,19 @@ import com.map.call_center_management.data.repositories.AgentRepository;
 @RestController
 @RequestMapping("/agents")
 public class AgentController {
-	
+
 	@Autowired
 	private AgentRepository agentRepository;
-	
+
 	@GetMapping
 	public List<Agent> getAgentList() {
 		return agentRepository.findAll();
 	}
-	
+
 	@GetMapping(value = "{agentId}")
-    public ResponseEntity<Agent> getAgentById(@PathVariable(name = "agentId") Long agentId) {
-		return ResponseEntity.ok(agentRepository.findById(agentId).get());
+	public ResponseEntity<Agent> getAgentById(@PathVariable(name = "agentId") Long agentId) {
+		Optional<Agent> queryResult = agentRepository.findById(agentId);
+		return queryResult.isPresent() ? ResponseEntity.ok(queryResult.get()) : ResponseEntity.badRequest().build();
 	}
 
 	@PostMapping
@@ -42,30 +44,37 @@ public class AgentController {
 	}
 
 	@PutMapping(value = "/{agentId}")
-    public ResponseEntity<Agent> updateAgent(@PathVariable(name = "agentId") Long agentId, @RequestBody Agent agentInfo) {
-		Agent agent = agentRepository.findById(agentId).get();
-		
+	public ResponseEntity<Agent> updateAgent(@PathVariable(name = "agentId") Long agentId, @RequestBody Agent agentInfo) {
+		Optional<Agent> queryResult = agentRepository.findById(agentId);
+		if(queryResult.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+
 		return ResponseEntity.ok(
 				agentRepository.save(
-						agent.toBuilder()
-							.name(agentInfo.getName())
-							.phoneNumber(agentInfo.getPhoneNumber())
-							.availability(agentInfo.getAvailability())
-							.build()
-							)
+						queryResult.get().toBuilder()
+						.name(agentInfo.getName())
+						.phoneNumber(agentInfo.getPhoneNumber())
+						.availability(agentInfo.getAvailability())
+						.build()
+						)
 				);
 	}
-	
+
 	@DeleteMapping(value = "/{agentId}")
-    public ResponseEntity<Agent> decommissionAgent(@PathVariable(name = "agentId") Long agentId) {
-		Agent agent = agentRepository.findById(agentId).get();
+	public ResponseEntity<Agent> decommissionAgent(@PathVariable(name = "agentId") Long agentId) {
+		Optional<Agent> queryResult = agentRepository.findById(agentId);
+		if(queryResult.isEmpty()) {
+			return ResponseEntity.badRequest().build();
+		}
+
 		return ResponseEntity.ok(
 				agentRepository.save(
-						agent.toBuilder()
-							.active(FALSE)
-							.availability(OFFLINE)
-							.build()
-							)
+						queryResult.get().toBuilder()
+						.active(FALSE)
+						.availability(OFFLINE)
+						.build()
+						)
 				);
 	}
 

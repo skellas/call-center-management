@@ -129,7 +129,48 @@ class AgentControllerTest {
 				.andExpect(jsonPath("active").value(FALSE));
 
 	}
-	
+
+	@Test
+	void shouldSafelyHandleBadIdOnLookup() throws Exception {
+		// Given
+		
+		when(repo.findById(any())).thenReturn(Optional.empty());
+
+		// When / Then
+		mockMvc.perform(
+					get(String.format("/agents/%d", 1l))
+				)
+				.andExpect(status().isBadRequest());
+
+	}
+
+	@Test
+	void shouldSafelyHandleBadIdOnUpdate() throws Exception {
+		// Given
+		
+		when(repo.findById(any())).thenReturn(Optional.empty());
+
+		// When / Then
+		mockMvc.perform(
+					put(String.format("/agents/%d", 1l))
+				)
+				.andExpect(status().isBadRequest());
+
+	}
+
+	@Test
+	void shouldSafelyHandleBadIdOnDecom() throws Exception {
+		// Given
+		
+		when(repo.findById(any())).thenReturn(Optional.empty());
+
+		// When / Then
+		mockMvc.perform(
+					delete(String.format("/agents/%d", 1l))
+				)
+				.andExpect(status().isBadRequest());
+
+	}
 	
 	private static String asJsonString(final Object obj) {
 
