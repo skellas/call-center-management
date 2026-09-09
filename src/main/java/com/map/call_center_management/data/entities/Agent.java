@@ -1,5 +1,6 @@
 package com.map.call_center_management.data.entities;
 
+
 import com.map.call_center_management.data.enums.AgentAvailability;
 
 import jakarta.persistence.Entity;
@@ -8,15 +9,20 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
-@Data
-@Builder
-@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@Builder(toBuilder = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 public class Agent {
@@ -30,7 +36,8 @@ public class Agent {
 	@Builder.Default
 	private Boolean active = Boolean.TRUE;
 	
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	private AgentAvailability availability;
+	private AgentAvailability availability = AgentAvailability.OFFLINE;
 
 }
