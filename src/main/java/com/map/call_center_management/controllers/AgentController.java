@@ -32,6 +32,11 @@ public class AgentController {
 		return agentRepository.findAll();
 	}
 
+	@GetMapping(value = "/active")
+	public List<Agent> getActiveAgentList() {
+		return agentRepository.findByActiveTrue();
+	}
+
 	@GetMapping(value = "{agentId}")
 	public ResponseEntity<Agent> getAgentById(@PathVariable(name = "agentId") Long agentId) {
 		Optional<Agent> queryResult = agentRepository.findById(agentId);

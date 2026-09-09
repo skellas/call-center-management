@@ -55,6 +55,24 @@ class AgentControllerTest {
 	}
 
 	@Test
+	void shouldReturnAllActiveAgents() throws Exception {
+		// Given
+		List<Agent> agents = List.of(
+				Agent.builder().id(1L).name("John Doe").phoneNumber("123-456-7890").build(),
+				Agent.builder().id(2L).name("Jane Doe").phoneNumber("123-456-7890").build()
+				);
+		when(repo.findAll()).thenReturn(null);
+		when(repo.findByActiveTrue()).thenReturn(agents);
+
+		// When / Then
+		mockMvc.perform(get("/agents/active"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].id").value(1L))
+				.andExpect(jsonPath("$[1].id").value(2L));
+
+	}
+
+	@Test
 	void shouldReturnAgentById() throws Exception {
 		// Given
 		Agent agent = Agent.builder().name("Jane Doe").phoneNumber("123-456-7890").id(1L).build();
