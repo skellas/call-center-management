@@ -3,6 +3,7 @@ package com.map.call_center_management.services;
 
 import static com.map.call_center_management.data.enums.AgentAvailability.OFFLINE;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +35,12 @@ public class AgentService {
 	
 	public Optional<Agent> save(Agent agent) {
 		if (Objects.isNull(agent.getId())) {
-			return Optional.of(repo.save(agent));
+			Agent newAgent = Agent.builder().active(TRUE)
+					.availability(OFFLINE)
+					.name(agent.getName())
+					.phoneNumber(agent.getPhoneNumber())
+					.build();
+			return Optional.of(repo.save(newAgent));
 		}
 		Optional<Agent> result = repo.findById(agent.getId());
 		if (result.isEmpty()) {

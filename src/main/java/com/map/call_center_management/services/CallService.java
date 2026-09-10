@@ -1,5 +1,7 @@
 package com.map.call_center_management.services;
 
+import static java.lang.Boolean.TRUE;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,7 +50,14 @@ public class CallService {
 	
 	public Optional<Call> save(Call call) {
 		if (Objects.isNull(call.getId())) {
-			return Optional.of(repo.save(call));
+			Call newCall = Call.builder().active(TRUE)
+					.name(call.getName())
+					.notes(call.getNotes())
+					.phoneNumber(call.getPhoneNumber())
+					.priority(call.getPriority())
+					.status(call.getStatus())
+					.build();
+			return Optional.of(repo.save(newCall));
 		}
 		Optional<Call> result = repo.findById(call.getId());
 		if (result.isEmpty()) {

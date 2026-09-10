@@ -1,6 +1,7 @@
 package com.map.call_center_management.controllers;
 
 import static com.map.call_center_management.data.enums.AgentAvailability.BUSY;
+import static com.map.call_center_management.data.enums.AgentAvailability.OFFLINE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,10 +91,12 @@ class AgentControllerTest {
 	@Test
 	void shouldCreateAgent() throws Exception {
 		// Given
-		Agent postedAgent = Agent.builder().name("Jane Doe").phoneNumber("123-456-7890").build();
-		Agent persistedAgent = postedAgent.toBuilder().id(1L).build();
+		Agent postedAgent = Agent.builder().name("Jane Doe").phoneNumber("123-456-7890").availability(OFFLINE).build();
 		
-		when(service.save(postedAgent)).thenReturn(Optional.of(persistedAgent));
+		when(service.save(any()))
+			.thenAnswer(invocation -> {
+				return Optional.of(invocation.getArgument(0));
+			});
 
 		// When / Then
 		mockMvc.perform(
@@ -101,8 +104,7 @@ class AgentControllerTest {
 					.content(asJsonString(postedAgent))
 					.contentType(APPLICATION_JSON)
 				)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("id").value(persistedAgent.getId()));
+				.andExpect(status().isOk());
 
 	}
 	

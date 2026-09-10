@@ -2,6 +2,8 @@ package com.map.call_center_management.data.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.map.call_center_management.data.enums.CallPriority;
 import com.map.call_center_management.data.enums.CallStatus;
 
@@ -41,6 +43,8 @@ public class Call {
 	private String name;
 	@NonNull
 	private String phoneNumber;
+	
+	@JsonIgnore
 	@Builder.Default
 	private Boolean active = Boolean.TRUE;
 
@@ -54,6 +58,7 @@ public class Call {
 	
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "agent_id")
+	@JsonBackReference
 	private Agent agent;
 	
 	private String notes;
