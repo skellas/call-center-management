@@ -40,7 +40,7 @@ public class CallService {
 		if (callResult.isEmpty()) {
 			return Optional.empty();
 		}
-		Optional<Agent> agentResult = agentRepo.findById(callId);
+		Optional<Agent> agentResult = agentRepo.findById(agentId);
 		if (agentResult.isEmpty()) {
 			return Optional.empty();
 		}
