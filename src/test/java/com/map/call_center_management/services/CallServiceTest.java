@@ -2,6 +2,7 @@ package com.map.call_center_management.services;
 
 import static com.map.call_center_management.data.enums.CallStatus.IN_PROGRESS;
 import static com.map.call_center_management.data.enums.CallStatus.QUEUED;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -16,7 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.map.call_center_management.data.entities.Agent;
 import com.map.call_center_management.data.entities.Call;
+import com.map.call_center_management.data.repositories.AgentRepository;
 import com.map.call_center_management.data.repositories.CallRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +27,8 @@ class CallServiceTest {
 	
 	@Mock
 	private CallRepository repo;
+	@Mock
+	private AgentRepository agentRepo;
 	
 	@InjectMocks
 	private CallService service;
@@ -76,5 +81,18 @@ class CallServiceTest {
 		verify(repo).save(updatedCall);
 	}
 
+	@Test
+	void shouldAssignAgent() {
+		Call call = Call.builder().name("John Doe").phoneNumber("123-456-7890").status(QUEUED).id(1L).build();
+		Agent agent = Agent.builder().name("John Doe").phoneNumber("123-456-7890").id(1L).build();
+
+		when(repo.findById(call.getId())).thenReturn(Optional.of(call));
+		when(agentRepo.findById(agent.getId())).thenReturn(Optional.of(agent));
+		when(repo.save(any())).thenAnswer(returnsFirstArg());
+		
+		Optional<Call> result = service.assignCallToAgent(call.getId(), agent.getId());
+		
+		assertEquals(result.get().getAgent(), agent, "Should have assigned the agent before persisting");
+	}
 
 }

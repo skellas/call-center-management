@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.map.call_center_management.data.entities.Call;
+import com.map.call_center_management.data.entities.Agent;
+import com.map.call_center_management.data.repositories.AgentRepository;
 import com.map.call_center_management.data.repositories.CallRepository;
 
 @Component
@@ -15,6 +17,8 @@ public class CallService {
 	
 	@Autowired
 	private CallRepository repo;
+	@Autowired
+	private AgentRepository agentRepo;
 	
 	public List<Call> getAllCalls() {
 		return repo.findAll();
@@ -26,6 +30,20 @@ public class CallService {
 	
 	public Optional<Call> getCallById(Long identifier) {
 		return repo.findById(identifier);
+	}
+	
+	public Optional<Call> assignCallToAgent(Long callId, Long agentId) {
+
+		Optional<Call> callResult = repo.findById(callId);
+		if (callResult.isEmpty()) {
+			return Optional.empty();
+		}
+		Optional<Agent> agentResult = agentRepo.findById(callId);
+		if (agentResult.isEmpty()) {
+			return Optional.empty();
+		}
+		
+		return Optional.of(repo.save(callResult.get().toBuilder().agent(agentResult.get()).build()));
 	}
 	
 	public Optional<Call> save(Call call) {
