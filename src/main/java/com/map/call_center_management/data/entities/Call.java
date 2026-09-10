@@ -2,16 +2,19 @@ package com.map.call_center_management.data.entities;
 
 import java.time.LocalDateTime;
 
-
 import com.map.call_center_management.data.enums.CallPriority;
 import com.map.call_center_management.data.enums.CallStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.AccessLevel;
@@ -48,6 +51,10 @@ public class Call {
 	@Builder.Default
 	@Enumerated(EnumType.ORDINAL)
 	private CallPriority priority = CallPriority.LOW;
+	
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "agent_id")
+	private Agent agent;
 	
 	private String notes;
 
