@@ -46,7 +46,7 @@ public class Call {
 	private CallStatus status = CallStatus.QUEUED;
 
 	@Builder.Default
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.ORDINAL)
 	private CallPriority priority = CallPriority.LOW;
 	
 	private String notes;

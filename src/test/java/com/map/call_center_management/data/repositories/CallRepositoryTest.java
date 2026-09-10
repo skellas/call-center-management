@@ -2,12 +2,16 @@ package com.map.call_center_management.data.repositories;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import com.map.call_center_management.data.entities.Call;
+import com.map.call_center_management.data.enums.CallPriority;
 
 @DataJpaTest
 class CallRepositoryTest {
@@ -59,5 +63,31 @@ class CallRepositoryTest {
 		repo.saveAndFlush(dummyCall.toBuilder().notes("Dummy Notes").build());
 		
 		assertNotNull(repo.findById(dummyCall.getId()).get().getUpdatedOn(), "Should set the updated on date upon update");
+	}
+	
+	@Test
+	void shouldFindActiveAndSortByPriorityAndCreatedOn() {
+		Call lowPriorityOne = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.LOW).build());
+		sleep();
+		Call lowPriorityTwo = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.LOW).build());
+		Call mediumPriorityOne = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.MEDIUM).build());
+		sleep();
+		Call highPriorityOne = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.HIGH).build());
+		sleep();
+		Call highPriorityTwo = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.HIGH).build());
+		Call criticalPriorityOne = repo.save(Call.builder().name("Dummy Call").phoneNumber("123-456-7890").priority(CallPriority.CRITICAL).build());
+		
+		List<Call> response = repo.findByActiveTrueOrderByPriorityDescCreatedOnDesc();
+		assertEquals(List.of(criticalPriorityOne, highPriorityTwo, highPriorityOne, mediumPriorityOne, lowPriorityTwo, lowPriorityOne),
+				response, "Should be sorted in order of Priority descending and then CreatedOn descending");
+		
+	}
+	
+	private void sleep() {
+		try {
+		    TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException ie) {
+		    Thread.currentThread().interrupt();
+		}
 	}
 }
